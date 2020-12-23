@@ -1,9 +1,21 @@
 import { getApiDataByCity } from "./api-wrapper.js";
 import observer from "./observer.js";
+import Tour from "./tour.js";
+import Screen from "./screen.js";
 
 const observerApiData = observer();
+const screen = Screen();
 
-observerApiData.subscribe(console.log);
+// transform api data to tour
+function pipeDataToTours(cb) {
+  return function (data) {
+    const tours = data.map((tourData) => Tour(tourData));
+    cb(tours);
+  };
+}
+
+observerApiData.subscribe(screen.cleanScreen);
+observerApiData.subscribe(pipeDataToTours(screen.addCards));
 
 getApiDataByCity("pucallpa").then((data) => {
   observerApiData.notify(data);
