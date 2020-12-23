@@ -17,6 +17,14 @@ function pipeDataToTours(cb) {
 observerApiData.subscribe(screen.cleanScreen);
 observerApiData.subscribe(pipeDataToTours(screen.addCards));
 
+// listening changes
+document.getElementById("cities").addEventListener("change", (e) => {
+  getApiDataByCity(e.target.value).then((data) => {
+    observerApiData.notify(data);
+  });
+});
+
+// get data for first page
 getApiDataByCity("pucallpa").then((data) => {
   observerApiData.notify(data);
 });
