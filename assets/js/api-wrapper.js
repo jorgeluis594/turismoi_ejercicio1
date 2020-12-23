@@ -1,6 +1,6 @@
 async function getApiDataByCity(city) {
   const tours = await fetchApi(city);
-  return tours;
+  return joinActivitiesToTour(tours);
 }
 
 async function fetchApi(city) {
@@ -19,6 +19,21 @@ async function fetchApi(city) {
     }
   );
   return (await response).json();
+}
+
+function joinActivitiesToTour(data) {
+  const activitiesData = data.included.reduce((activities, activity) => {
+    activities[activity.id] = activity.attributes;
+    return activities;
+  }, {});
+
+  // include activities by tour
+  return data.data.map((tour) => {
+    const activities = tour.relationships.activities.data.map(
+      (activity) => activitiesData[activity.id]
+    );
+    return { ...tour, activities };
+  });
 }
 
 export { getApiDataByCity };
